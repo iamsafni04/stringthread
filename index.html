@@ -6,14 +6,19 @@
   <title>Team BugSlayers</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
+    /* Basic styling */
     body {
       margin: 0;
       font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #0a0a0f, #1a1a2e);
+      overflow: hidden;
+      background: #0a0a0f;
       color: #eee;
-      min-height: 100vh;
       display: flex;
       flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+      position: relative;
     }
 
     header {
@@ -21,19 +26,13 @@
       align-items: center;
       gap: 20px;
       padding: 28px;
-      background: #111320;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-      border-bottom: 1px solid #2b2d42;
+      z-index: 10;
+      position: relative;
     }
 
     .logo {
       height: 60px;
       width: auto;
-    }
-
-    .site-info {
-      display: flex;
-      flex-direction: column;
     }
 
     .site-title {
@@ -44,144 +43,141 @@
       text-transform: uppercase;
     }
 
-    .site-desc {
-      font-size: 1rem;
-      color: #9aa0b8;
-    }
-
     .main-buttons {
       display: flex;
       flex-wrap: wrap;
-      gap: 16px;
-      padding: 24px;
-      justify-content: center;
+      gap: 24px;
+      margin-top: 50px;
+      z-index: 10;
+      position: relative;
     }
 
     .btn {
-      padding: 14px 30px;
-      border-radius: 12px;
-      background: #222436;
-      color: #fff;
-      font-weight: 600;
-      border: 1px solid #3a3f62;
+      padding: 18px 36px;
+      border-radius: 16px;
+      background: linear-gradient(45deg, #00eaff, #ff00ff);
+      color: #111;
+      font-weight: 700;
+      border: none;
       cursor: pointer;
-      transition: 0.3s;
+      font-size: 1.1rem;
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(60deg, rgba(255,255,255,0.2), rgba(255,255,255,0));
+      transform: rotate(45deg);
+      transition: all 0.5s;
+    }
+
+    .btn:hover::before {
+      top: -70%;
+      left: -70%;
+      transform: rotate(90deg);
     }
 
     .btn:hover {
-      background: #00eaff;
-      color: #111;
-      border-color: #00eaff;
-      transform: translateY(-3px);
-      box-shadow: 0 4px 20px rgba(0,234,255,0.3);
+      transform: translateY(-5px) scale(1.05);
+      box-shadow: 0 10px 25px rgba(0,234,255,0.5);
     }
 
     footer {
       margin-top: auto;
       text-align: center;
-      color: #666;
+      color: #777;
       padding: 20px 0;
+      z-index: 10;
+      position: relative;
     }
 
-    .container {
+    /* Canvas styling */
+    #threadCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 20px;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
     }
-
-    .card {
-      background: #141522;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.45);
-      border: 1px solid #23263d;
-      margin-bottom: 28px;
-    }
-
-    .card-title {
-      font-size: 1.4rem;
-      font-weight: 600;
-      color: #00eaff;
-      margin-bottom: 12px;
-    }
-
-    input, textarea {
-      width: 100%;
-      padding: 10px;
-      border-radius: 8px;
-      background: #1c1e2e;
-      border: 1px solid #33364d;
-      color: #eee;
-      font-family: inherit;
-    }
-
-    input:focus, textarea:focus {
-      border-color: #00eaff;
-      outline: none;
-    }
-
-    .submit-btn {
-      margin-top: 10px;
-      width: 120px;
-      align-self: flex-end;
-      background: #00eaff;
-      color: #111;
-      border: none;
-      padding: 10px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: 0.3s;
-    }
-
-    .submit-btn:hover {
-      background: #0ef;
-      transform: translateY(-2px);
-    }
-
-    .entry {
-      border-bottom: 1px solid #2b2d42;
-      padding: 10px 0;
-    }
-
-    .entry:last-child { border-bottom: none; }
-    .name { font-weight: 600; color: #00eaff; }
-    .date { font-size: 0.8rem; color: #777; margin-left: 6px; }
-    .msg { margin-top: 4px; }
-
   </style>
 </head>
 <body>
+  <canvas id="threadCanvas"></canvas>
+
   <header>
     <img src="logo.png" alt="Team BugSlayers Logo" class="logo">
-    <div class="site-info">
-      <div class="site-title">Team BugSlayers</div>
-      <div class="site-desc">Creative String Art & Digital Designs</div>
-    </div>
+    <div class="site-title">Team BugSlayers</div>
   </header>
 
   <div class="main-buttons">
     <button class="btn" onclick="location.href='indexstringart.html'">Start String Art</button>
     <button class="btn" onclick="location.href='circle_numbers_html_p_5.html'">Circle Numbers Image</button>
-    <button class="btn" onclick="location.href='index3d.html'">3D View</button>
-    <button class="btn" onclick="location.href='indexmaking.html'">Basic Principles</button>
-    <button class="btn" onclick="location.href='gallery.html'">Gallery</button>
-  </div>
-
-  <div class="container">
-    <div class="card">
-      <div class="card-title">Guestbook</div>
-      <form>
-        <input type="text" placeholder="Name" maxlength="12" required>
-        <textarea placeholder="Leave a message" rows="3" maxlength="500" required></textarea>
-        <button type="submit" class="submit-btn">Submit</button>
-      </form>
-    </div>
   </div>
 
   <footer>
     © 2024 Team BugSlayers. All Rights Reserved.
   </footer>
+
+  <script>
+    // Animated string/thread design
+    const canvas = document.getElementById('threadCanvas');
+    const ctx = canvas.getContext('2d');
+    let w, h;
+    function resize() {
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    // Generate threads
+    const threads = [];
+    for(let i = 0; i < 40; i++){
+      threads.push({
+        x1: Math.random()*w,
+        y1: Math.random()*h,
+        x2: Math.random()*w,
+        y2: Math.random()*h,
+        speedX1: (Math.random()-0.5)*0.2,
+        speedY1: (Math.random()-0.5)*0.2,
+        speedX2: (Math.random()-0.5)*0.2,
+        speedY2: (Math.random()-0.5)*0.2,
+        color: `hsla(${Math.random()*360}, 80%, 60%, 0.15)`
+      });
+    }
+
+    function animate(){
+      ctx.clearRect(0,0,w,h);
+      for(let t of threads){
+        ctx.beginPath();
+        ctx.moveTo(t.x1, t.y1);
+        ctx.lineTo(t.x2, t.y2);
+        ctx.strokeStyle = t.color;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        t.x1 += t.speedX1;
+        t.y1 += t.speedY1;
+        t.x2 += t.speedX2;
+        t.y2 += t.speedY2;
+
+        if(t.x1<0 || t.x1>w) t.speedX1*=-1;
+        if(t.y1<0 || t.y1>h) t.speedY1*=-1;
+        if(t.x2<0 || t.x2>w) t.speedX2*=-1;
+        if(t.y2<0 || t.y2>h) t.speedY2*=-1;
+      }
+      requestAnimationFrame(animate);
+    }
+    animate();
+  </script>
 </body>
 </html>
