@@ -8,7 +8,7 @@
   <style>
     /* Reset & Base */
     * { margin:0; padding:0; box-sizing:border-box; }
-    html, body { width: 100%; height: 100%; font-family: 'Poppins', sans-serif; overflow: hidden; background:#0a0a0f; color:#eee; }
+    html, body { width: 100%; height: 100%; font-family: 'Poppins', sans-serif; overflow: hidden; background:#f7f7f9; color:#111; }
 
     body {
       display:flex;
@@ -27,14 +27,14 @@
       position: relative;
     }
 
-    .logo { height: 70px; width: auto; }
+    .logo { height: 70px; width: auto; transition: all 0.3s ease; }
     .site-title {
       font-size: 3rem;
       font-weight: 700;
-      color: #00eaff;
+      color: #00aaff;
       letter-spacing: 2px;
       text-transform: uppercase;
-      text-shadow: 0 0 10px #00eaff, 0 0 20px #ff00ff;
+      transition: all 0.3s ease;
     }
 
     /* Main buttons */
@@ -51,8 +51,8 @@
     .btn {
       padding: 28px 56px;
       border-radius: 24px;
-      background: linear-gradient(45deg, #00eaff, #ff00ff);
-      color: #111;
+      background: #111;  /* dark button for light background */
+      color: #fff;
       font-weight: 700;
       border: none;
       cursor: pointer;
@@ -60,7 +60,7 @@
       transition: all 0.4s ease;
       position: relative;
       overflow: hidden;
-      box-shadow: 0 0 20px rgba(0,234,255,0.3), 0 0 40px rgba(255,0,255,0.3);
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
     }
 
     .btn::before {
@@ -82,14 +82,14 @@
     }
 
     .btn:hover {
-      transform: translateY(-8px) scale(1.1);
-      box-shadow: 0 15px 40px rgba(0,234,255,0.5), 0 0 60px rgba(255,0,255,0.5);
+      transform: translateY(-6px) scale(1.05);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
     }
 
     footer {
       margin-top: auto;
       text-align: center;
-      color: #777;
+      color: #555;
       padding: 20px 0;
       z-index: 10;
       position: relative;
@@ -104,7 +104,7 @@
       height: 100%;
       z-index: 1;
       pointer-events: none;
-      background: #0a0a0f;
+      background: #f7f7f9;
     }
   </style>
 </head>
@@ -112,7 +112,8 @@
   <canvas id="threadCanvas"></canvas>
 
   <header>
-    <img src="logo.png" alt="Team BugSlayers Logo" class="logo">
+    <img src="logo_light.png" alt="Team BugSlayers Logo" class="logo" id="logoLight">
+    <img src="logo_dark.png" alt="Team BugSlayers Logo Dark" class="logo" id="logoDark" style="display:none;">
     <div class="site-title">Team BugSlayers</div>
   </header>
 
@@ -126,6 +127,7 @@
   </footer>
 
   <script>
+    // Canvas Thread Animation
     const canvas = document.getElementById('threadCanvas');
     const ctx = canvas.getContext('2d');
     let w, h;
@@ -137,7 +139,6 @@
     window.addEventListener('resize', resize);
     resize();
 
-    // Create threads
     const threads = [];
     const threadCount = 50;
     for(let i = 0; i < threadCount; i++){
@@ -150,7 +151,7 @@
         speedY1: (Math.random()-0.5)*0.3,
         speedX2: (Math.random()-0.5)*0.3,
         speedY2: (Math.random()-0.5)*0.3,
-        color: `hsla(${Math.random()*360}, 80%, 60%, 0.15)`
+        color: `hsla(${Math.random()*360}, 80%, 50%, 0.15)`
       });
     }
 
@@ -177,6 +178,30 @@
       requestAnimationFrame(animate);
     }
     animate();
+
+    // Theme toggle (light background, dark buttons, switch logos)
+    const logoLight = document.getElementById('logoLight');
+    const logoDark = document.getElementById('logoDark');
+
+    function switchToDarkLogo() {
+      logoLight.style.display = 'none';
+      logoDark.style.display = 'block';
+    }
+
+    function switchToLightLogo() {
+      logoLight.style.display = 'block';
+      logoDark.style.display = 'none';
+    }
+
+    // Example: auto switch based on time of day
+    const hour = new Date().getHours();
+    if(hour >= 18 || hour < 6) { // night
+      switchToDarkLogo();
+      document.body.style.background = '#111';
+      document.getElementById('threadCanvas').style.background = '#111';
+      document.querySelectorAll('.btn').forEach(btn => btn.style.background='#eee');
+      document.querySelectorAll('.btn').forEach(btn => btn.style.color='#111');
+    }
   </script>
 </body>
 </html>
