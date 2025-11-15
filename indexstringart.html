@@ -1,187 +1,167 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>STRING PHOTO SIMULATOR</title>
-  <meta name="keywords" content="stringart, stringphoto, craft">
-  
-  <!-- P5.js library -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="p5.min.js"></script>
   <script src="send.js" defer></script>
   <script src="kniter.js"></script>
   <script src="editPicturePage.js"></script>
   <script src="generatePage.js"></script>
   <script src="sketch.js"></script>
-
+  <link href="https://fonts.googleapis.com/css?family=Rubik:400,500,700&display=swap" rel="stylesheet">
   <style>
-    /* ===== DARK THEME ===== */
-    body, html {
+    body {
+      background: #181A20;
+      color: #ECECEC;
+      font-family: 'Rubik', sans-serif;
       margin: 0;
-      padding: 0;
-      font-family: 'Poppins', sans-serif;
-      background: #121212;
-      color: #f0f0f0;
-      transition: background 0.3s, color 0.3s;
+      height: 100vh;
     }
-
-    .dark-theme {
-      background: #1c1c1e;
-      color: #f5f5f5;
+    #bodyContainer {
+      max-width: 480px;
+      margin: 40px auto;
+      background: #20232A;
+      border-radius: 32px;
+      box-shadow: 0 8px 32px rgba(40, 44, 52, 0.6);
+      padding: 28px 22px;
+      visibility: visible;
+      animation: fadeIn 1.2s;
     }
+    @keyframes fadeIn { from { opacity: 0;} to {opacity: 1;} }
 
-    /* Toolbar */
     #toolBar {
       display: flex;
       flex-direction: column;
-      gap: 20px;
-      padding: 20px;
-      width: 300px;
-      background: #1f1f23;
-      border-radius: 15px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
-      position: fixed;
-      top: 20px;
-      left: 20px;
+      gap: 18px;
     }
 
-    /* Buttons and hover animation */
-    .btn-hover {
-      background: #2c2c2f;
-      border-radius: 10px;
-      padding: 12px;
-      margin: 5px 0;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.25s ease-in-out;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    .buttonSt, .labelSt, .plusMinus, .displayBox, .displayBoxParent {
+      margin: 12px 0;
     }
 
-    .btn-hover:hover {
-      background: #3a3a3d;
-      transform: translateY(-3px) scale(1.05);
-      box-shadow: 0 8px 12px rgba(0,0,0,0.5);
-    }
-
-    /* Generate and delete buttons */
-    .generate-btn {
-      background: linear-gradient(135deg, #ff6ec7, #7873f5);
-      color: #fff;
-      font-weight: bold;
-    }
-
-    .generate-btn:hover {
-      background: linear-gradient(135deg, #ff87d4, #8c88ff);
-      transform: translateY(-3px) scale(1.07) rotate(-1deg);
-    }
-
-    .delete-btn {
-      background: linear-gradient(135deg, #ff4b5c, #ff6e6c);
-      color: #fff;
-      font-weight: bold;
-    }
-
-    .delete-btn:hover {
-      background: linear-gradient(135deg, #ff616f, #ff8484);
-      transform: translateY(-3px) scale(1.07) rotate(1deg);
-    }
-
-    /* Labels */
     .labelSt {
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 5px;
-      display: block;
-      color: #ccc;
+      font-size: 16px;
+      font-weight: 500;
+      color: #F9A825;
+      margin-bottom: 6px;
+      letter-spacing: 1px;
+      text-shadow: 0 1px 6px #282a36a9;
     }
 
-    /* Number selectors */
-    .displayBoxParent {
-      display: flex;
-      justify-content: center;
-      align-items: center;
+    /* Animated Button Styles */
+    .animated-btn {
+      background: linear-gradient(90deg, #ffd600 0%, #ff4081 100%);
+      color: #181A20;
+      font-weight: 700;
+      border: none;
+      border-radius: 18px;
+      padding: 13px 22px;
+      cursor: pointer;
+      box-shadow: 0 4px 18px #ff408176;
+      transition: transform 0.18s, box-shadow 0.22s;
+      font-size: 17px;
+      margin: 12px 0;
+    }
+    .animated-btn:hover, .animated-btn:focus {
+      transform: scale(1.08) rotate(-2deg);
+      box-shadow: 0 8px 32px #ffd60088;
+      outline: none;
     }
 
+    /* Dark widget boxes */
     .displayBox {
+      background: #242632;
+      border-radius: 12px;
+      padding: 10px;
       display: flex;
-      gap: 5px;
-      padding: 8px;
-      border-radius: 8px;
-      background: #2a2a2e;
+      gap: 14px;
+      align-items: center;
+      box-shadow: 0 2px 8px #0009;
+    }
+    .displayBox > div, .displayBox .selected {
+      font-size: 15px;
+      padding: 8px 14px;
+      border-radius: 7px;
       cursor: pointer;
-      transition: all 0.2s;
+      background: #232843;
+      color: #FFD600;
+      transition: background 0.16s;
     }
-
-    .displayBox div {
-      padding: 5px 10px;
-      border-radius: 6px;
+    .displayBox .selected {
+      background: linear-gradient(90deg, #ffa000 0%, #ff4081 80%);
+      color: #181A20;
+      box-shadow: 0 2px 12px #ffd60066;
     }
-
-    .displayBox div.selected {
-      background: #7873f5;
-      color: #fff;
-      font-weight: bold;
-      transform: scale(1.1);
-    }
-
-    /* Plus-minus buttons */
     .plusMinus {
+      font-size: 25px;
+      padding: 4px 12px;
+      color: #FFD600;
       cursor: pointer;
-      padding: 5px 10px;
-      background: #3a3a3d;
-      border-radius: 5px;
-      user-select: none;
-      transition: all 0.2s;
+      transition: background 0.16s;
     }
-
     .plusMinus:hover {
-      background: #7873f5;
-      color: #fff;
-      transform: scale(1.2);
+      background: #292d3a;
+      border-radius: 50%;
     }
 
-    /* Sketch holder */
+    /* Color balance slider */
+    #colorBalance {
+      margin: 16px 0 0 0;
+    }
+
+    /* Save/Action Buttons */
+    #saveThings .displayBox > div, #saveThings .displayBoxParent {
+      background: #21212b;
+      color: #ffd600;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-right: 8px;
+      font-size: 15px;
+      box-shadow: 0 2px 4px #ffd60040;
+      padding: 8px 11px;
+      transition: background 0.13s, color 0.13s;
+    }
+    #saveThings .displayBox > div:hover {
+      background: #ff4081;
+      color: #fffde7;
+    }
+
+    /* Sectioning styles */
     #sketch-holder {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      bottom: 20px;
-      left: 350px;
-      border-radius: 15px;
-      background: #18181c;
-      box-shadow: 0 0 30px rgba(0,0,0,0.7);
-      overflow: hidden;
+      border-radius: 16px;
+      background: #191a23;
+      min-height: 180px;
+      box-shadow: 0 4px 24px #21212144;
+      margin: 18px 0 0 0;
     }
   </style>
+  <meta name="keyword" content="stringart, stringphoto, craft">
 </head>
 <body>
-  <div id="bodyContainer" class="dark-theme">
+  <div id="bodyContainer">
     <div id="toolBar">
-      <!-- Step 1 -->
       <div id="step01">
-        <div id="inputImage" class="btn-hover">
-          <label class="labelSt" for="file">UPLOAD IMAGE</label> 
-          <input type="file" id="file" onchange="openFile(event)" />
+        <div id="inputImage" style="cursor: pointer;">
+          <label class="labelSt" for="file">IMAGE</label>
+          <input type="file" id="file" onchange="openFile(event)" style="margin-top:6px;" />
         </div>
-
         <div id="numbers">
-          <div id="numberOfPins" class="buttonSt btn-hover">
+          <div id="numberOfPins" class="buttonSt">
             <div class="labelSt">Pins Number</div>
             <div id="pinSelect" class="displayBoxParent">
               <div id="frameList" class="displayBox">
-                <div translate="no">120</div>
-                <div translate="no">240</div>
-                <div translate="no">280</div>
-                <div translate="no" class="selected">320</div>
+                <div>120</div>
+                <div>240</div>
+                <div>280</div>
+                <div class="selected">320</div>
               </div>
             </div>
           </div>
-
-          <div id="numberOfstroke" class="buttonSt btn-hover">
+          <div id="numberOfstroke" class="buttonSt">
             <label class="labelSt">Strokes Number</label>
             <div id="stroke" class="displayBoxParent">
-              <div id="strokeScreen">
+              <div id="strokeScreen" class="displayBox">
                 <div id="strokeMinus" class="plusMinus">➖</div>
                 <div id="strokeValue">2000</div>
                 <div id="strokePlus" class="plusMinus">➕</div>
@@ -189,20 +169,16 @@
             </div>
           </div>
         </div>
-
-        <div id="makeArt" class="btn-hover generate-btn">
-          <div id="strokeReady">GENERATE</div>
+        <div id="makeArt">
+          <button id="strokeReady" class="animated-btn">Gen</button>
         </div>
       </div>
-
-      <!-- Step 2 -->
       <div id="step02">
         <div id="imgorstring">
-          <div id="cstr" class="selected btn-hover"></div>
-          <div id="cimg" class="btn-hover"></div>
+          <div id="cstr" class="selected"></div>
+          <div id="cimg"></div>
         </div>
-
-        <div id="colorBalance" class="buttonSt btn-hover">
+        <div id="colorBalance" class="buttonSt">
           <div class="labelSt" style="font-size: 10px;">Color Balance</div>
           <div id="balance" class="displayBoxParent">
             <div id="balanceScreen" class="displayBox">
@@ -212,27 +188,23 @@
             </div>
           </div>
         </div>
-
-        <div id="saveThings" style="text-align: center;" class="btn-hover">
+        <div id="saveThings" style="text-align: center;">
           <div class="labelSt" style="font-size: 10px;">Save</div>
           <div id="saveBox" style="height:100%;" class="displayBoxParent">
             <div id="saveList" style="height:100%;" class="displayBox">
-              <div translate="no">IMG</div>
-              <div translate="no">DAT</div>
+              <div>IMG</div>
+              <div>DAT</div>
             </div>
           </div>
         </div>
-
-        <div id="remakeArt" class="btn-hover generate-btn">
-          <div id="remakeReady">REGENERATE</div>
+        <div id="remakeArt">
+          <button id="remakeReady" class="animated-btn" style="width:110px;">Regen</button>
         </div>
-
-        <div id="backToStarted" class="btn-hover delete-btn">
-          <div id="backtostarted">DELETE</div>
+        <div id="backToStarted">
+          <button id="backtostarted" class="animated-btn" style="background:linear-gradient(90deg,#181A20 0%,#ff4081 80%);color:#ffd600;width:95px;">Del</button>
         </div>
       </div>
     </div>
-
     <div id="sketch-holder"></div>
   </div>
 </body>
