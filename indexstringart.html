@@ -14,8 +14,146 @@
   <script src="generatePage.js"></script>
   <script src="sketch.js"></script>
 
-  <!-- Custom CSS -->
-  <link href="style.css" rel="stylesheet">
+  <style>
+    /* ===== DARK THEME ===== */
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #121212;
+      color: #f0f0f0;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .dark-theme {
+      background: #1c1c1e;
+      color: #f5f5f5;
+    }
+
+    /* Toolbar */
+    #toolBar {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding: 20px;
+      width: 300px;
+      background: #1f1f23;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      position: fixed;
+      top: 20px;
+      left: 20px;
+    }
+
+    /* Buttons and hover animation */
+    .btn-hover {
+      background: #2c2c2f;
+      border-radius: 10px;
+      padding: 12px;
+      margin: 5px 0;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s ease-in-out;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    }
+
+    .btn-hover:hover {
+      background: #3a3a3d;
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 8px 12px rgba(0,0,0,0.5);
+    }
+
+    /* Generate and delete buttons */
+    .generate-btn {
+      background: linear-gradient(135deg, #ff6ec7, #7873f5);
+      color: #fff;
+      font-weight: bold;
+    }
+
+    .generate-btn:hover {
+      background: linear-gradient(135deg, #ff87d4, #8c88ff);
+      transform: translateY(-3px) scale(1.07) rotate(-1deg);
+    }
+
+    .delete-btn {
+      background: linear-gradient(135deg, #ff4b5c, #ff6e6c);
+      color: #fff;
+      font-weight: bold;
+    }
+
+    .delete-btn:hover {
+      background: linear-gradient(135deg, #ff616f, #ff8484);
+      transform: translateY(-3px) scale(1.07) rotate(1deg);
+    }
+
+    /* Labels */
+    .labelSt {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 5px;
+      display: block;
+      color: #ccc;
+    }
+
+    /* Number selectors */
+    .displayBoxParent {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .displayBox {
+      display: flex;
+      gap: 5px;
+      padding: 8px;
+      border-radius: 8px;
+      background: #2a2a2e;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .displayBox div {
+      padding: 5px 10px;
+      border-radius: 6px;
+    }
+
+    .displayBox div.selected {
+      background: #7873f5;
+      color: #fff;
+      font-weight: bold;
+      transform: scale(1.1);
+    }
+
+    /* Plus-minus buttons */
+    .plusMinus {
+      cursor: pointer;
+      padding: 5px 10px;
+      background: #3a3a3d;
+      border-radius: 5px;
+      user-select: none;
+      transition: all 0.2s;
+    }
+
+    .plusMinus:hover {
+      background: #7873f5;
+      color: #fff;
+      transform: scale(1.2);
+    }
+
+    /* Sketch holder */
+    #sketch-holder {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      bottom: 20px;
+      left: 350px;
+      border-radius: 15px;
+      background: #18181c;
+      box-shadow: 0 0 30px rgba(0,0,0,0.7);
+      overflow: hidden;
+    }
+  </style>
 </head>
 <body>
   <div id="bodyContainer" class="dark-theme">
@@ -99,142 +237,3 @@
   </div>
 </body>
 </html>
-
-/* General dark theme */
-body, html {
-  margin: 0;
-  padding: 0;
-  font-family: 'Poppins', sans-serif;
-  background: #121212;
-  color: #f0f0f0;
-  transition: background 0.3s, color 0.3s;
-}
-
-.dark-theme {
-  background: #1c1c1e;
-  color: #f5f5f5;
-}
-
-/* Toolbar */
-#toolBar {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  padding: 20px;
-  width: 300px;
-  background: #1f1f23;
-  border-radius: 15px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.5);
-  position: fixed;
-  top: 20px;
-  left: 20px;
-}
-
-/* Buttons and hover animation */
-.btn-hover {
-  background: #2c2c2f;
-  border-radius: 10px;
-  padding: 12px;
-  margin: 5px 0;
-  text-align: center;
-  cursor: pointer;
-  transition: all 0.25s ease-in-out;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-}
-
-.btn-hover:hover {
-  background: #3a3a3d;
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 8px 12px rgba(0,0,0,0.5);
-}
-
-/* Generate and delete buttons */
-.generate-btn {
-  background: linear-gradient(135deg, #ff6ec7, #7873f5);
-  color: #fff;
-  font-weight: bold;
-}
-
-.generate-btn:hover {
-  background: linear-gradient(135deg, #ff87d4, #8c88ff);
-  transform: translateY(-3px) scale(1.07) rotate(-1deg);
-}
-
-.delete-btn {
-  background: linear-gradient(135deg, #ff4b5c, #ff6e6c);
-  color: #fff;
-  font-weight: bold;
-}
-
-.delete-btn:hover {
-  background: linear-gradient(135deg, #ff616f, #ff8484);
-  transform: translateY(-3px) scale(1.07) rotate(1deg);
-}
-
-/* Labels */
-.labelSt {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 5px;
-  display: block;
-  color: #ccc;
-}
-
-/* Number selectors */
-.displayBoxParent {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.displayBox {
-  display: flex;
-  gap: 5px;
-  padding: 8px;
-  border-radius: 8px;
-  background: #2a2a2e;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.displayBox div {
-  padding: 5px 10px;
-  border-radius: 6px;
-}
-
-.displayBox div.selected {
-  background: #7873f5;
-  color: #fff;
-  font-weight: bold;
-  transform: scale(1.1);
-}
-
-/* Plus-minus buttons */
-.plusMinus {
-  cursor: pointer;
-  padding: 5px 10px;
-  background: #3a3a3d;
-  border-radius: 5px;
-  user-select: none;
-  transition: all 0.2s;
-}
-
-.plusMinus:hover {
-  background: #7873f5;
-  color: #fff;
-  transform: scale(1.2);
-}
-
-/* Sketch holder */
-#sketch-holder {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  bottom: 20px;
-  left: 350px;
-  border-radius: 15px;
-  background: #18181c;
-  box-shadow: 0 0 30px rgba(0,0,0,0.7);
-  overflow: hidden;
-}
