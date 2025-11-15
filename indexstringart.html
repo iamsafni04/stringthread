@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>STRING PHOTO SIMULATOR</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="p5.min.js"></script>
+    <script src="send.js" defer></script>
+    <script src="kniter.js"></script>
+    <script src="editPicturePage.js"></script>
+    <script src="generatePage.js"></script>
+    <script src="sketch.js"></script>
+    <link href="style.css" rel="stylesheet" />
+    <meta name="keyword" content="stringart, stringphoto, craft">
+</head>
+<body>
+  <div id="bodyContainer" style="visibility:hidden">
+    <div id="toolBar">
+      <div id="step01">
+        <div id="inputImage" style="cursor: pointer;">
+          <label class="labelSt" for="file">IMAGE</label> 
+          <input type="file" id="file" onchange="openFile(event)" />
+        </div>
+        <div id="numbers" style="display: block;">
+          <div id="numberOfPins" class="buttonSt">
+            <div class="labelSt">Pins Number</div>
+            <div id="pinSelect" class="displayBoxParent">
+              <div id="frameList" class="displayBox">
+                <div translate="no">120</div>
+                <div translate="no">240</div>
+                <div translate="no">280</div>
+                <div translate="no" class="selected">320</div>
+              </div>
+            </div>
+          </div>
+          <div id="numberOfstroke" class="buttonSt">
+            <label class="labelSt">Strokes Number</label>
+            <div id="stroke" class="displayBoxParent">
+              <div id="strokeScreen">
+                <div id="strokeMinus" class="plusMinus">➖</div>
+                <div id="strokeValue">2000</div>
+                <div id="strokePlus" class="plusMinus">➕</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="makeArt">
+          <div id="strokeReady">
+            Gen
+          </div>
+        </div>
+      </div>
+      <div id="step02">
+        <div id="imgorstring">
+              <div id="cstr" class="selected"></div>
+              <div id="cimg"></div>
+        </div>
+        <div id="colorBalance" class="buttonSt">
+          <div class="labelSt" style="font-size: 10px;">Color Balance</div>
+          <div id="balance" class="displayBoxParent">
+            <div id="balanceScreen" class="displayBox">
+              <div id="balanceMinus" class="plusMinus">➖</div>
+              <div id="balanceValue">50</div>
+              <div id="balancePlus" class="plusMinus">➕</div>
+            </div>
+          </div>
+        </div>
+        <div id="saveThings" style="text-align: center;">
+          <div class="labelSt" style="font-size: 10px;">Save</div>
+          <div id="saveBox" style="height:100%;" class="displayBoxParent">
+            <div id="saveList" style="height:100%;" class="displayBox">
+              <div translate="no">IMG</div>
+              <div translate="no">DAT</div>
+            </div>
+          </div>
+        </div>
+        <div id="remakeArt">
+          <div id="remakeReady">
+            Regen
+          </div>
+        </div>
+        <div id="backToStarted">
+          <div id="backtostarted">
+            Del
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="sketch-holder"></div>
+  </div>
+</body></html>
