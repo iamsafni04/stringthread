@@ -26,6 +26,16 @@
       border-bottom: 1px solid #2b2d42;
     }
 
+    .logo {
+      height: 60px;
+      width: auto;
+    }
+
+    .site-info {
+      display: flex;
+      flex-direction: column;
+    }
+
     .site-title {
       font-size: 2.4rem;
       font-weight: 700;
@@ -144,7 +154,8 @@
 </head>
 <body>
   <header>
-    <div>
+    <img src="logo.png" alt="Team BugSlayers Logo" class="logo">
+    <div class="site-info">
       <div class="site-title">Team BugSlayers</div>
       <div class="site-desc">Creative String Art & Digital Designs</div>
     </div>
@@ -153,8 +164,6 @@
   <div class="main-buttons">
     <button class="btn" onclick="location.href='indexstringart.html'">Start String Art</button>
     <button class="btn" onclick="location.href='circle_numbers_html_p_5.html'">Circle Numbers Image</button>
-    <button class="btn" onclick="location.href='info.html'">Info</button>
-    <button class="btn" onclick="location.href='battle0_making.html'">Making of battle0</button>
     <button class="btn" onclick="location.href='index3d.html'">3D View</button>
     <button class="btn" onclick="location.href='indexmaking.html'">Basic Principles</button>
     <button class="btn" onclick="location.href='gallery.html'">Gallery</button>
@@ -168,12 +177,6 @@
         <textarea placeholder="Leave a message" rows="3" maxlength="500" required></textarea>
         <button type="submit" class="submit-btn">Submit</button>
       </form>
-    </div>
-
-    <div class="card">
-      <div class="card-title">Resources</div>
-      <p style="color:#aaa;">Uploads are not supported. Please visit the full resources page.</p>
-      <button class="btn" onclick="location.href='indexresource.html'">Go to Resources</button>
     </div>
   </div>
 
