@@ -6,18 +6,15 @@
   <title>Team BugSlayers</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
-    /* Basic styling */
+    /* Reset & Base */
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html, body { width: 100%; height: 100%; font-family: 'Poppins', sans-serif; overflow: hidden; background:#0a0a0f; color:#eee; }
+
     body {
-      margin: 0;
-      font-family: 'Poppins', sans-serif;
-      overflow: hidden;
-      background: #0a0a0f;
-      color: #eee;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      min-height: 100vh;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:flex-start;
       position: relative;
     }
 
@@ -25,45 +22,45 @@
       display: flex;
       align-items: center;
       gap: 20px;
-      padding: 28px;
+      padding: 40px 40px 20px 40px;
       z-index: 10;
       position: relative;
     }
 
-    .logo {
-      height: 60px;
-      width: auto;
-    }
-
+    .logo { height: 70px; width: auto; }
     .site-title {
-      font-size: 2.4rem;
+      font-size: 3rem;
       font-weight: 700;
       color: #00eaff;
       letter-spacing: 2px;
       text-transform: uppercase;
+      text-shadow: 0 0 10px #00eaff, 0 0 20px #ff00ff;
     }
 
+    /* Main buttons */
     .main-buttons {
       display: flex;
       flex-wrap: wrap;
-      gap: 24px;
-      margin-top: 50px;
+      gap: 36px;
+      margin-top: 60px;
       z-index: 10;
       position: relative;
+      justify-content: center;
     }
 
     .btn {
-      padding: 18px 36px;
-      border-radius: 16px;
+      padding: 28px 56px;
+      border-radius: 24px;
       background: linear-gradient(45deg, #00eaff, #ff00ff);
       color: #111;
       font-weight: 700;
       border: none;
       cursor: pointer;
-      font-size: 1.1rem;
+      font-size: 1.5rem;
       transition: all 0.4s ease;
       position: relative;
       overflow: hidden;
+      box-shadow: 0 0 20px rgba(0,234,255,0.3), 0 0 40px rgba(255,0,255,0.3);
     }
 
     .btn::before {
@@ -85,8 +82,8 @@
     }
 
     .btn:hover {
-      transform: translateY(-5px) scale(1.05);
-      box-shadow: 0 10px 25px rgba(0,234,255,0.5);
+      transform: translateY(-8px) scale(1.1);
+      box-shadow: 0 15px 40px rgba(0,234,255,0.5), 0 0 60px rgba(255,0,255,0.5);
     }
 
     footer {
@@ -107,6 +104,7 @@
       height: 100%;
       z-index: 1;
       pointer-events: none;
+      background: #0a0a0f;
     }
   </style>
 </head>
@@ -120,7 +118,7 @@
 
   <div class="main-buttons">
     <button class="btn" onclick="location.href='indexstringart.html'">Start String Art</button>
-    <button class="btn" onclick="location.href='circle_numbers_html_p_5.html'">Circle Numbers Image</button>
+    <button class="btn" onclick="location.href='circle_numbers_html_p_5.html'">Circle Numbers</button>
   </div>
 
   <footer>
@@ -128,10 +126,10 @@
   </footer>
 
   <script>
-    // Animated string/thread design
     const canvas = document.getElementById('threadCanvas');
     const ctx = canvas.getContext('2d');
     let w, h;
+
     function resize() {
       w = canvas.width = window.innerWidth;
       h = canvas.height = window.innerHeight;
@@ -139,18 +137,19 @@
     window.addEventListener('resize', resize);
     resize();
 
-    // Generate threads
+    // Create threads
     const threads = [];
-    for(let i = 0; i < 40; i++){
+    const threadCount = 50;
+    for(let i = 0; i < threadCount; i++){
       threads.push({
         x1: Math.random()*w,
         y1: Math.random()*h,
         x2: Math.random()*w,
         y2: Math.random()*h,
-        speedX1: (Math.random()-0.5)*0.2,
-        speedY1: (Math.random()-0.5)*0.2,
-        speedX2: (Math.random()-0.5)*0.2,
-        speedY2: (Math.random()-0.5)*0.2,
+        speedX1: (Math.random()-0.5)*0.3,
+        speedY1: (Math.random()-0.5)*0.3,
+        speedX2: (Math.random()-0.5)*0.3,
+        speedY2: (Math.random()-0.5)*0.3,
         color: `hsla(${Math.random()*360}, 80%, 60%, 0.15)`
       });
     }
@@ -162,7 +161,7 @@
         ctx.moveTo(t.x1, t.y1);
         ctx.lineTo(t.x2, t.y2);
         ctx.strokeStyle = t.color;
-        ctx.lineWidth = 1.5;
+        ctx.lineWidth = 2;
         ctx.stroke();
 
         t.x1 += t.speedX1;
