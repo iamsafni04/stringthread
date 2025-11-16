@@ -139,8 +139,11 @@
   <meta name="keyword" content="stringart, stringphoto, craft">
 </head>
 <body>
+  <body>
   <div id="bodyContainer">
-    <div id="toolBar">
+
+    <!-- SETTINGS AREA -->
+    <div id="toolBar" style="position: relative; z-index: 2;">
       <div id="step01">
         <div id="inputImage" style="cursor: pointer;">
           <label class="labelSt" for="file">IMAGE</label>
@@ -173,11 +176,13 @@
           <button id="strokeReady" class="animated-btn">Gen</button>
         </div>
       </div>
+
       <div id="step02">
         <div id="imgorstring">
           <div id="cstr" class="selected"></div>
           <div id="cimg"></div>
         </div>
+
         <div id="colorBalance" class="buttonSt">
           <div class="labelSt" style="font-size: 10px;">Color Balance</div>
           <div id="balance" class="displayBoxParent">
@@ -188,24 +193,33 @@
             </div>
           </div>
         </div>
+
         <div id="saveThings" style="text-align: center;">
           <div class="labelSt" style="font-size: 10px;">Save</div>
-          <div id="saveBox" style="height:100%;" class="displayBoxParent">
-            <div id="saveList" style="height:100%;" class="displayBox">
+          <div id="saveBox" class="displayBoxParent">
+            <div id="saveList" class="displayBox">
               <div>IMG</div>
               <div>DAT</div>
             </div>
           </div>
         </div>
+
         <div id="remakeArt">
           <button id="remakeReady" class="animated-btn" style="width:110px;">Regen</button>
         </div>
+
         <div id="backToStarted">
           <button id="backtostarted" class="animated-btn" style="background:linear-gradient(90deg,#181A20 0%,#ff4081 80%);color:#ffd600;width:95px;">Del</button>
         </div>
       </div>
     </div>
-    <div id="sketch-holder"></div>
+
+    <!-- IMAGE VIEWER AREA -->
+    <div id="sketch-holder"
+      style="margin-top:25px; position: relative; z-index:1; max-height:380px; overflow:hidden;">
+    </div>
+
   </div>
 </body>
+
 </html>
