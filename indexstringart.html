@@ -1,289 +1,239 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>STRING PHOTO SIMULATOR</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STRING PHOTO SIMULATOR</title>
+  <meta name="keywords" content="stringart, stringphoto, craft">
+  
+  <!-- P5.js library -->
+  <script src="p5.min.js"></script>
+  <script src="send.js" defer></script>
+  <script src="kniter.js"></script>
+  <script src="editPicturePage.js"></script>
+  <script src="generatePage.js"></script>
+  <script src="sketch.js"></script>
 
-<style>
-/* -----------------------------------
-  GLOBAL FONT & RESET
------------------------------------ */
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:'Poppins', sans-serif;
-}
+  <style>
+    /* ===== DARK THEME ===== */
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #121212;
+      color: #f0f0f0;
+      transition: background 0.3s, color 0.3s;
+    }
 
-body{
-  overflow:hidden;
-  transition:0.5s ease-in-out;
-}
+    .dark-theme {
+      background: #1c1c1e;
+      color: #f5f5f5;
+    }
 
-/* -----------------------------------
-  BACKGROUND ANIMATED STRING LINES
------------------------------------ */
-.bg-lines{
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  background:#0d0d0d;
-  overflow:hidden;
-  z-index:-1;
-}
+    /* Toolbar */
+    #toolBar {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding: 20px;
+      width: 300px;
+      background: #1f1f23;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      position: fixed;
+      top: 20px;
+      left: 20px;
+    }
 
-.line{
-  position:absolute;
-  width:2px;
-  height:200px;
-  background:linear-gradient(to bottom, transparent, #ff6ec7, transparent);
-  animation:move 6s linear infinite;
-  opacity:0.3;
-}
+    /* Buttons and hover animation */
+    .btn-hover {
+      background: #2c2c2f;
+      border-radius: 10px;
+      padding: 12px;
+      margin: 5px 0;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.25s ease-in-out;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    }
 
-@keyframes move{
-  0%{transform:translateY(-200px);}
-  100%{transform:translateY(120vh);}
-}
+    .btn-hover:hover {
+      background: #3a3a3d;
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 8px 12px rgba(0,0,0,0.5);
+    }
 
-/* -----------------------------------
-  LIGHT & DARK THEME COLORS
------------------------------------ */
-:root{
-  --bg:#1e1e1e;
-  --card:#2a2a2f;
-  --text:#ffffff;
-  --highlight:#7873f5;
-  --button:#3b3b40;
-}
+    /* Generate and delete buttons */
+    .generate-btn {
+      background: linear-gradient(135deg, #ff6ec7, #7873f5);
+      color: #fff;
+      font-weight: bold;
+    }
 
-.light{
-  --bg:#f5f5f5;
-  --card:#ffffff;
-  --text:#000000;
-  --highlight:#5851d6;
-  --button:#e7e7e7;
-  background:#ffffff;
-}
+    .generate-btn:hover {
+      background: linear-gradient(135deg, #ff87d4, #8c88ff);
+      transform: translateY(-3px) scale(1.07) rotate(-1deg);
+    }
 
-/* -----------------------------------
-  TOOL BAR DESIGN
------------------------------------ */
-#toolBar{
-  position:fixed;
-  top:20px;
-  left:20px;
-  width:310px;
-  background:var(--card);
-  color:var(--text);
-  padding:20px;
-  border-radius:18px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.4);
-  backdrop-filter:blur(10px);
-  transition:0.4s;
-  max-height:95vh;
-  overflow-y:auto;
-}
+    .delete-btn {
+      background: linear-gradient(135deg, #ff4b5c, #ff6e6c);
+      color: #fff;
+      font-weight: bold;
+    }
 
-/* -----------------------------------
-  BUTTON STYLE
------------------------------------ */
-.btn{
-  background:var(--button);
-  padding:12px;
-  margin:10px 0;
-  text-align:center;
-  border-radius:12px;
-  cursor:pointer;
-  transition:0.25s;
-  font-weight:600;
-  border:1px solid transparent;
-}
+    .delete-btn:hover {
+      background: linear-gradient(135deg, #ff616f, #ff8484);
+      transform: translateY(-3px) scale(1.07) rotate(1deg);
+    }
 
-.btn:hover{
-  transform:translateY(-4px) scale(1.03);
-  border-color:var(--highlight);
-}
+    /* Labels */
+    .labelSt {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 5px;
+      display: block;
+      color: #ccc;
+    }
 
-/* Special buttons */
-.generate{
-  background:linear-gradient(135deg, #ff6ec7, #7873f5);
-  color:#fff;
-}
-.delete{
-  background:linear-gradient(135deg, #ff4b5c, #ff6e6c);
-  color:#fff;
-}
+    /* Number selectors */
+    .displayBoxParent {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
-/* -----------------------------------
-  TOGGLE THEME BUTTON
------------------------------------ */
-#toggleTheme{
-  position:fixed;
-  top:25px;
-  right:25px;
-  background:var(--card);
-  padding:12px 20px;
-  color:var(--text);
-  border-radius:30px;
-  cursor:pointer;
-  font-size:14px;
-  box-shadow:0 5px 20px rgba(0,0,0,0.3);
-  transition:0.3s;
-}
-#toggleTheme:hover{
-  transform:scale(1.05);
-}
+    .displayBox {
+      display: flex;
+      gap: 5px;
+      padding: 8px;
+      border-radius: 8px;
+      background: #2a2a2e;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
 
-/* -----------------------------------
-  SKETCH HOLDER (RIGHT SIDE AREA)
------------------------------------ */
-#sketch-holder{
-  position:absolute;
-  left:360px;
-  right:20px;
-  top:20px;
-  bottom:20px;
-  background:var(--card);
-  border-radius:20px;
-  box-shadow:0 10px 25px rgba(0,0,0,0.4);
-  transition:0.4s;
-}
+    .displayBox div {
+      padding: 5px 10px;
+      border-radius: 6px;
+    }
 
-.label{
-  font-size:12px;
-  margin-bottom:5px;
-  opacity:0.7;
-}
+    .displayBox div.selected {
+      background: #7873f5;
+      color: #fff;
+      font-weight: bold;
+      transform: scale(1.1);
+    }
 
-.selector{
-  background:var(--button);
-  padding:10px;
-  border-radius:10px;
-  display:flex;
-  gap:8px;
-  cursor:pointer;
-}
-.selector div{
-  padding:6px 10px;
-  border-radius:6px;
-}
-.selector .selected{
-  background:var(--highlight);
-  color:#fff;
-}
+    /* Plus-minus buttons */
+    .plusMinus {
+      cursor: pointer;
+      padding: 5px 10px;
+      background: #3a3a3d;
+      border-radius: 5px;
+      user-select: none;
+      transition: all 0.2s;
+    }
 
-/* Plus Minus */
-.plusMinus{
-  background:var(--button);
-  padding:6px 12px;
-  border-radius:6px;
-  cursor:pointer;
-  transition:0.2s;
-}
-.plusMinus:hover{
-  background:var(--highlight);
-  color:#fff;
-  transform:scale(1.1);
-}
+    .plusMinus:hover {
+      background: #7873f5;
+      color: #fff;
+      transform: scale(1.2);
+    }
 
-</style>
+    /* Sketch holder */
+    #sketch-holder {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      bottom: 20px;
+      left: 350px;
+      border-radius: 15px;
+      background: #18181c;
+      box-shadow: 0 0 30px rgba(0,0,0,0.7);
+      overflow: hidden;
+    }
+  </style>
 </head>
+<body>
+  <div id="bodyContainer" class="dark-theme">
+    <div id="toolBar">
+      <!-- Step 1 -->
+      <div id="step01">
+        <div id="inputImage" class="btn-hover">
+          <label class="labelSt" for="file">UPLOAD IMAGE</label> 
+          <input type="file" id="file" onchange="openFile(event)" />
+        </div>
 
-<body class="dark">
+        <div id="numbers">
+          <div id="numberOfPins" class="buttonSt btn-hover">
+            <div class="labelSt">Pins Number</div>
+            <div id="pinSelect" class="displayBoxParent">
+              <div id="frameList" class="displayBox">
+                <div translate="no">120</div>
+                <div translate="no">240</div>
+                <div translate="no">280</div>
+                <div translate="no" class="selected">320</div>
+              </div>
+            </div>
+          </div>
 
-<!-- ============================
-     ANIMATED BACKGROUND LINES
-============================ -->
-<div class="bg-lines" id="bgLines"></div>
+          <div id="numberOfstroke" class="buttonSt btn-hover">
+            <label class="labelSt">Strokes Number</label>
+            <div id="stroke" class="displayBoxParent">
+              <div id="strokeScreen">
+                <div id="strokeMinus" class="plusMinus">➖</div>
+                <div id="strokeValue">2000</div>
+                <div id="strokePlus" class="plusMinus">➕</div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-<!-- ============================
-     THEME TOGGLE BUTTON
-============================ -->
-<div id="toggleTheme">🌙 Dark Mode</div>
+        <div id="makeArt" class="btn-hover generate-btn">
+          <div id="strokeReady">GENERATE</div>
+        </div>
+      </div>
 
-<!-- ============================
-     TOOLBAR
-============================ -->
-<div id="toolBar">
+      <!-- Step 2 -->
+      <div id="step02">
+        <div id="imgorstring">
+          <div id="cstr" class="selected btn-hover"></div>
+          <div id="cimg" class="btn-hover"></div>
+        </div>
 
-  <div class="label">Upload Image</div>
-  <div class="btn">
-    <label for="file">Choose File</label>
-    <input type="file" id="file" style="display:none;">
+        <div id="colorBalance" class="buttonSt btn-hover">
+          <div class="labelSt" style="font-size: 10px;">Color Balance</div>
+          <div id="balance" class="displayBoxParent">
+            <div id="balanceScreen" class="displayBox">
+              <div id="balanceMinus" class="plusMinus">➖</div>
+              <div id="balanceValue">50</div>
+              <div id="balancePlus" class="plusMinus">➕</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="saveThings" style="text-align: center;" class="btn-hover">
+          <div class="labelSt" style="font-size: 10px;">Save</div>
+          <div id="saveBox" style="height:100%;" class="displayBoxParent">
+            <div id="saveList" style="height:100%;" class="displayBox">
+              <div translate="no">IMG</div>
+              <div translate="no">DAT</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="remakeArt" class="btn-hover generate-btn">
+          <div id="remakeReady">REGENERATE</div>
+        </div>
+
+        <div id="backToStarted" class="btn-hover delete-btn">
+          <div id="backtostarted">DELETE</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="sketch-holder"></div>
   </div>
-
-  <div class="label">Pins Number</div>
-  <div class="selector">
-      <div>120</div>
-      <div>240</div>
-      <div>280</div>
-      <div class="selected">320</div>
-  </div>
-
-  <div class="label">Strokes</div>
-  <div style="display:flex; gap:8px; align-items:center;">
-    <div class="plusMinus">➖</div>
-    <div id="strokeValue">2000</div>
-    <div class="plusMinus">➕</div>
-  </div>
-
-  <div class="btn generate">GENERATE</div>
-
-  <div class="label">Color Balance</div>
-  <div style="display:flex; gap:8px; align-items:center;">
-    <div class="plusMinus">➖</div>
-    <div id="balVal">50</div>
-    <div class="plusMinus">➕</div>
-  </div>
-
-  <div class="label">Save</div>
-  <div class="selector">
-    <div>IMG</div>
-    <div>DAT</div>
-  </div>
-
-  <div class="btn generate">REGENERATE</div>
-  <div class="btn delete">DELETE</div>
-
-</div>
-
-<!-- ============================
-     CANVAS / P5 AREA
-============================ -->
-<div id="sketch-holder"></div>
-
-<script>
-/* =====================================================
-   GENERATE ANIMATED BACKGROUND LINES
-===================================================== */
-const bg = document.getElementById("bgLines");
-for(let i=0;i<40;i++){
-  let div=document.createElement("div");
-  div.classList.add("line");
-  div.style.left= Math.random()*100 + "vw";
-  div.style.animationDelay= (Math.random()*5)+"s";
-  div.style.height = (150+Math.random()*200)+"px";
-  bg.appendChild(div);
-}
-
-/* =====================================================
-   LIGHT / DARK THEME TOGGLE
-===================================================== */
-const toggle=document.getElementById("toggleTheme");
-toggle.onclick=()=>{
-  document.body.classList.toggle("light");
-
-  if(document.body.classList.contains("light")){
-    toggle.innerHTML="☀️ Light Mode";
-  } else {
-    toggle.innerHTML="🌙 Dark Mode";
-  }
-};
-</script>
-
 </body>
 </html>
