@@ -1,213 +1,690 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="utf-8" />
   <title>STRING PHOTO SIMULATOR</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="keyword" content="stringart, stringphoto, craft" />
 
-  <!-- Scripts -->
+  <!-- External libs & your scripts (kept as requested) -->
   <script src="p5.min.js"></script>
   <script src="send.js" defer></script>
-  <script src="kniter.js"></script>
-  <script src="editPicturePage.js"></script>
-  <script src="generatePage.js"></script>
-  <script src="sketch.js"></script>
-
-  <link href="https://fonts.googleapis.com/css?family=Rubik:400,500,700&display=swap" rel="stylesheet">
+  <script src="kniter.js" defer></script>
+  <script src="editPicturePage.js" defer></script>
+  <script src="generatePage.js" defer></script>
+  <script src="sketch.js" defer></script>
 
   <style>
-    body {
-      background: #181A20;
-      color: #ECECEC;
-      font-family: 'Rubik', sans-serif;
-      margin: 0;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      overflow-x: hidden;
+    /* -------- Base ---------- */
+    :root{
+      --bg: #f6f7fb;
+      --panel: #ffffff;
+      --muted: #7b8391;
+      --accent: #6c63ff;
+      --accent-2: #00c2a8;
+      --glass: rgba(255,255,255,0.6);
+      --shadow: 0 6px 18px rgba(21,26,46,0.09);
+      --radius: 14px;
+    }
+    :root.dark{
+      --bg: #0b0f15;
+      --panel: #0f1622;
+      --muted: #9aa4b2;
+      --accent: #8b7dff;
+      --accent-2: #2ce3c9;
+      --glass: rgba(255,255,255,0.03);
+      --shadow: 0 8px 28px rgba(2,6,12,0.6);
     }
 
-    /* Main container */
-    #bodyContainer {
-      width: 920px;
-      margin-top: 20px;
-      background: #20232A;
-      border-radius: 32px;
-      box-shadow: 0 8px 32px rgba(40, 44, 52, 0.6);
-      padding: 30px 40px;
-      animation: fadeIn 1.2s;
-      display: flex;
-      flex-direction: column;
-      gap: 30px; /* spacing between settings & viewer */
+    html,body{
+      height:100%;
+      margin:0;
+      font-family: 'Inter', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(108,99,255,0.06), transparent 6%),
+                  radial-gradient(800px 400px at 90% 90%, rgba(0,194,168,0.04), transparent 6%),
+                  var(--bg);
+      color: #111827;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    html.dark, body.dark { /* fallback */
+      color: #e6eef6;
     }
 
-    @keyframes fadeIn { from { opacity:0;} to {opacity:1;} }
-
-    /* SETTINGS PANEL */
-    #toolBar {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
+    /* Container */
+    #bodyContainer{
+      max-width:1200px;
+      margin:28px auto;
+      padding:20px;
+      display:grid;
+      grid-template-columns: 360px 1fr;
+      gap:22px;
+      align-items:start;
+      min-height:calc(100vh - 56px);
+      visibility:hidden; /* revealed after JS runs */
     }
 
-    .buttonSt, .labelSt, .plusMinus, .displayBox, .displayBoxParent {
-      margin: 10px 0;
+    /* Left toolbar */
+    #toolBar{
+      background: linear-gradient(180deg, var(--panel), rgba(255,255,255,0.02));
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding:18px;
+      position:relative;
+      overflow:hidden;
+      border: 1px solid rgba(255,255,255,0.03);
+      display:flex;
+      flex-direction:column;
+      gap:14px;
     }
 
-    .labelSt {
-      font-size: 16px;
-      font-weight: 500;
-      color: #F9A825;
-      margin-bottom: 6px;
+    /* Headline */
+    #toolBar::before{
+      content: "String Photo — Controls";
+      position:absolute;
+      top:12px;
+      left:18px;
+      font-weight:600;
+      letter-spacing:0.2px;
+      font-size:13px;
+      color:var(--muted);
+      opacity:0.9;
     }
 
-    /* Fancy Buttons */
-    .animated-btn {
-      background: linear-gradient(90deg, #ffd600 0%, #ff4081 100%);
-      color: #181A20;
-      font-weight: 700;
-      border: none;
-      border-radius: 16px;
-      padding: 13px 24px;
-      cursor: pointer;
-      font-size: 16px;
-      transition: .2s;
-    }
-    .animated-btn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 8px 32px #ffd60080;
+    .sectionTitle{
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:6px;
+      font-weight:600;
     }
 
-    /* Display boxes */
-    .displayBox {
-      background: #242632;
-      border-radius: 12px;
-      padding: 10px;
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      box-shadow: 0 2px 8px #0009;
+    /* Buttons / controls */
+    .buttonSt{
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), var(--glass));
+      border-radius:12px;
+      padding:10px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      box-shadow: 0 4px 10px rgba(1,6,12,0.03);
+      transition:transform .18s ease, box-shadow .18s ease;
+      border: 1px solid rgba(0,0,0,0.03);
     }
-    .displayBox > div, .displayBox .selected {
-      font-size: 15px;
-      padding: 8px 14px;
-      border-radius: 7px;
-      cursor: pointer;
-      background: #232843;
-      color: #FFD600;
-    }
-    .displayBox .selected {
-      background: linear-gradient(90deg, #ffa000 0%, #ff4081 80%);
-      color: #181A20;
+    .buttonSt:active{ transform: translateY(1px) scale(.999); }
+
+    .labelSt{
+      font-size:11px;
+      color:var(--muted);
+      font-weight:700;
+      letter-spacing:0.3px;
     }
 
-    .plusMinus {
-      font-size: 25px;
-      padding: 4px 12px;
-      color: #FFD600;
-      cursor: pointer;
+    /* file input styling */
+    #inputImage{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    #file{
+      display:none;
+    }
+    .fileBtn{
+      background:linear-gradient(90deg,var(--accent),var(--accent-2));
+      color:white;
+      padding:10px 14px;
+      border-radius:12px;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow: 0 8px 20px rgba(108,99,255,0.12);
+      transition:transform .16s ease, box-shadow .16s ease;
+      user-select:none;
+    }
+    .fileBtn:active{ transform:translateY(2px); box-shadow: 0 6px 14px rgba(0,0,0,0.12); }
+
+    /* number pickers */
+    .displayBoxParent{ display:flex; align-items:center; justify-content:space-between; }
+    .displayBox{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      padding:6px 8px;
+      border-radius:10px;
+      background:transparent;
+      user-select:none;
+    }
+    #frameList div{
+      padding:6px 10px;
+      border-radius:8px;
+      cursor:pointer;
+      font-weight:700;
+    }
+    #frameList div.selected{
+      box-shadow: 0 6px 20px rgba(108,99,255,0.12);
+      background: linear-gradient(90deg,var(--accent),var(--accent-2));
+      color:white;
+      transform:translateY(-4px) scale(1.02);
     }
 
-    /* IMAGE VIEWER (big but always below settings) */
-    #sketch-holder {
-      width: 100%;
-      height: 650px;
-      max-height: 75vh;
-      background: #111218;
-      border-radius: 22px;
-      overflow: hidden;
-      box-shadow: 0 8px 40px #0007;
+    .plusMinus{
+      cursor:pointer;
+      font-size:16px;
+      user-select:none;
+      padding:6px;
+      border-radius:8px;
+    }
+    #strokeValue, #balanceValue{
+      min-width:60px;
+      text-align:center;
+      font-weight:800;
+      letter-spacing:0.6px;
     }
 
+    /* big action buttons */
+    #makeArt, #remakeArt{
+      display:flex;
+      gap:10px;
+    }
+    .actionBtn{
+      flex:1;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      padding:14px 10px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:800;
+      letter-spacing:0.6px;
+      background: linear-gradient(90deg,var(--accent),var(--accent-2));
+      color:white;
+      box-shadow: 0 14px 36px rgba(108,99,255,0.12);
+      transition: transform .18s cubic-bezier(.2,.9,.2,1), box-shadow .18s;
+      position:relative;
+      overflow:hidden;
+    }
+    .actionBtn:active{ transform:translateY(3px) scale(.995); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+
+    /* a small ripple on click */
+    .ripple {
+      position:absolute;
+      border-radius:50%;
+      transform: scale(0);
+      animation: ripple 0.6s linear;
+      background: rgba(255,255,255,0.28);
+      pointer-events:none;
+    }
+    @keyframes ripple {
+      to { transform: scale(6); opacity:0; }
+    }
+
+    /* Right canvas holder */
+    #sketch-holder{
+      min-height:640px;
+      height:calc(100vh - 120px);
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00));
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position:relative;
+      border:1px solid rgba(255,255,255,0.03);
+    }
+
+    /* theme toggle */
+    .themeToggle{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:flex-end;
+      margin-bottom:6px;
+    }
+    .toggleWrap{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      background:var(--glass);
+      padding:6px;
+      border-radius:28px;
+    }
+    .toggle{
+      width:56px;
+      height:30px;
+      background:linear-gradient(90deg, rgba(0,0,0,0.06), rgba(0,0,0,0.02));
+      border-radius:30px;
+      position:relative;
+      cursor:pointer;
+      transition:background .24s ease;
+    }
+    .toggle .knob{
+      position:absolute;
+      top:3px;
+      left:3px;
+      width:24px;
+      height:24px;
+      border-radius:50%;
+      background:white;
+      box-shadow: 0 6px 16px rgba(2,6,12,0.12);
+      transition:left .22s cubic-bezier(.2,.9,.2,1), background .22s;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:11px;
+      font-weight:800;
+      color:#111;
+    }
+    .toggle.on{
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    }
+    .toggle.on .knob{
+      left:29px;
+      background:#0b0f15;
+      color: white;
+    }
+
+    /* small helpers */
+    .smallMuted{ font-size:12px; color:var(--muted); }
+    .controlsRow{ display:flex; gap:10px; align-items:center; }
+
+    /* responsive */
+    @media (max-width: 980px){
+      #bodyContainer{ grid-template-columns: 1fr; padding:14px; }
+      #sketch-holder{ order: -1; height:48vh; min-height:360px; }
+    }
+
+    /* subtle focus outline for accessibility */
+    :focus { outline: 3px solid rgba(99,102,241,0.12); outline-offset:2px; border-radius:8px; }
   </style>
 </head>
 
 <body>
+  <!-- Theme root (JS will toggle class on <html>) -->
   <div id="bodyContainer">
+    <div id="toolBar" role="region" aria-label="Controls">
+      <div class="themeToggle">
+        <div class="smallMuted">Theme</div>
+        <div class="toggleWrap" style="margin-left:auto;">
+          <div id="themeLabel" class="smallMuted" aria-hidden="true">Light</div>
+          <div id="themeToggle" class="toggle" role="switch" aria-checked="false" tabindex="0">
+            <div class="knob">☀</div>
+          </div>
+        </div>
+      </div>
 
-    <!-- SETTINGS PANEL -->
-    <div id="toolBar">
-
+      <!-- Step 1 -->
       <div id="step01">
-        <div id="inputImage" style="cursor:pointer;">
-          <label class="labelSt" for="file">IMAGE</label>
-          <input type="file" id="file" onchange="openFile(event)" style="margin-top:6px;">
+        <div id="inputImage" style="cursor: pointer;">
+          <label class="fileBtn" for="file" id="fileLabel">📁 Upload IMAGE</label>
+          <input type="file" id="file" accept="image/*" onchange="openFile(event)" />
         </div>
 
-        <div id="numbers">
-
-          <div id="numberOfPins" class="buttonSt">
+        <div id="numbers" style="display:block;">
+          <div class="buttonSt" aria-label="Pins Number">
             <div class="labelSt">Pins Number</div>
             <div id="pinSelect" class="displayBoxParent">
-              <div id="frameList" class="displayBox">
-                <div>120</div>
-                <div>240</div>
-                <div>280</div>
-                <div class="selected">320</div>
+              <div id="frameList" class="displayBox" role="list">
+                <div role="listitem" tabindex="0">120</div>
+                <div role="listitem" tabindex="0">240</div>
+                <div role="listitem" tabindex="0">280</div>
+                <div role="listitem" tabindex="0" class="selected">320</div>
               </div>
             </div>
           </div>
 
-          <div id="numberOfstroke" class="buttonSt">
-            <label class="labelSt">Strokes Number</label>
+          <div class="buttonSt" aria-label="Strokes Number">
+            <div class="labelSt">Strokes Number</div>
             <div id="stroke" class="displayBoxParent">
-              <div id="strokeScreen" class="displayBox">
-                <div id="strokeMinus" class="plusMinus">➖</div>
+              <div id="strokeScreen" style="display:flex; align-items:center;">
+                <div id="strokeMinus" class="plusMinus" role="button" tabindex="0">➖</div>
                 <div id="strokeValue">2000</div>
-                <div id="strokePlus" class="plusMinus">➕</div>
+                <div id="strokePlus" class="plusMinus" role="button" tabindex="0">➕</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="makeArt" style="display:flex; gap:10px; margin-top:8px;">
+          <div id="strokeReady" class="actionBtn" role="button" tabindex="0">Generate</div>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div id="step02">
+        <div class="buttonSt" style="display:flex; flex-direction:row; justify-content:space-between; align-items:center;">
+          <div class="controlsRow" style="gap:8px;">
+            <div id="cstr" class="selected smallMuted" aria-pressed="true" style="font-weight:800;">String</div>
+            <div id="cimg" class="smallMuted" style="opacity:.7; cursor:pointer;">Image</div>
+          </div>
+
+          <div class="controlsRow" style="gap:10px;">
+            <div class="labelSt" style="font-size:11px;">Color Balance</div>
+            <div id="balance" class="displayBoxParent">
+              <div id="balanceScreen" class="displayBox">
+                <div id="balanceMinus" class="plusMinus" role="button" tabindex="0">➖</div>
+                <div id="balanceValue">50</div>
+                <div id="balancePlus" class="plusMinus" role="button" tabindex="0">➕</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:12px;">
+          <div class="buttonSt" style="flex:1; text-align:center;">
+            <div class="labelSt" style="font-size:11px;">Save</div>
+            <div id="saveBox" class="displayBoxParent" style="justify-content:center;">
+              <div id="saveList" class="displayBox" style="gap:12px;">
+                <div id="saveImg" tabindex="0" style="cursor:pointer;">IMG</div>
+                <div id="saveDat" tabindex="0" style="cursor:pointer;">DAT</div>
               </div>
             </div>
           </div>
 
-        </div>
+          <div id="remakeArt" style="min-width:140px;">
+            <div id="remakeReady" class="actionBtn" role="button" tabindex="0">Regen</div>
+          </div>
 
-        <div id="makeArt">
-          <button id="strokeReady" class="animated-btn">Gen</button>
-        </div>
-      </div>
-
-      <div id="step02">
-
-        <div id="imgorstring">
-          <div id="cstr" class="selected"></div>
-          <div id="cimg"></div>
-        </div>
-
-        <div id="colorBalance" class="buttonSt">
-          <div class="labelSt" style="font-size:10px;">Color Balance</div>
-          <div id="balance" class="displayBoxParent">
-            <div id="balanceScreen" class="displayBox">
-              <div id="balanceMinus" class="plusMinus">➖</div>
-              <div id="balanceValue">50</div>
-              <div id="balancePlus" class="plusMinus">➕</div>
-            </div>
+          <div id="backToStarted" style="min-width:90px;">
+            <div id="backtostarted" class="actionBtn" role="button" tabindex="0" style="background:transparent; color:var(--muted); font-weight:800; box-shadow:none; border:1px solid rgba(0,0,0,0.04);">Del</div>
           </div>
         </div>
-
-        <div id="saveThings" style="text-align:center;">
-          <div class="labelSt" style="font-size:10px;">Save</div>
-          <div id="saveBox" class="displayBoxParent">
-            <div id="saveList" class="displayBox">
-              <div>IMG</div>
-              <div>DAT</div>
-            </div>
-          </div>
-        </div>
-
-        <div id="remakeArt">
-          <button id="remakeReady" class="animated-btn" style="width:110px;">Regen</button>
-        </div>
-
-        <div id="backToStarted">
-          <button id="backtostarted" class="animated-btn" style="background:linear-gradient(90deg,#181A20 0%,#ff4081 80%);color:#ffd600;width:95px;">Del</button>
-        </div>
-
       </div>
-
     </div>
 
-    <!-- CLEAN SEPARATION — IMAGE VIEWER BELOW -->
-    <div id="sketch-holder"></div>
+    <!-- Right side: sketch holder with animated vector background -->
+    <div id="sketch-holder" aria-live="polite">
+      <!-- Animated SVG background (string vector) -->
+      <svg id="stringSvg" preserveAspectRatio="none" style="position:absolute; inset:0; width:100%; height:100%; z-index:0; pointer-events:none;">
+        <defs>
+          <linearGradient id="g1" x1="0" x2="1">
+            <stop offset="0%" stop-color="#6c63ff" stop-opacity="0.08"/>
+            <stop offset="100%" stop-color="#00c2a8" stop-opacity="0.06"/>
+          </linearGradient>
+        </defs>
+        <g id="strings" transform="translate(0,0)"></g>
+      </svg>
 
+      <!-- Content area for your p5 canvas or other output -->
+      <div id="canvasContent" style="position:relative; z-index:2; width:100%; height:100%; display:flex; align-items:center; justify-content:center; pointer-events:auto;">
+        <div style="text-align:center; opacity:0.9; color:var(--muted); padding:20px;">
+          <div style="font-weight:800; font-size:18px; margin-bottom:6px;">String Photo Simulator</div>
+          <div style="font-size:13px;">Your canvas / preview will appear here.</div>
+          <div style="font-size:12px; margin-top:16px; color:var(--muted);">Tip: Click Generate to start. Theme & settings are preserved.</div>
+        </div>
+      </div>
+    </div>
   </div>
+
+  <script>
+    /***********************
+     * UI INIT & BEHAVIOR
+     ***********************/
+    (function(){
+      const container = document.getElementById('bodyContainer');
+      const frameList = document.getElementById('frameList');
+      const strokeValue = document.getElementById('strokeValue');
+      const strokeMinus = document.getElementById('strokeMinus');
+      const strokePlus = document.getElementById('strokePlus');
+      const balanceValue = document.getElementById('balanceValue');
+      const balanceMinus = document.getElementById('balanceMinus');
+      const balancePlus = document.getElementById('balancePlus');
+      const makeBtn = document.getElementById('strokeReady');
+      const remixBtn = document.getElementById('remakeReady');
+      const delBtn = document.getElementById('backtostarted');
+      const saveImg = document.getElementById('saveImg');
+      const saveDat = document.getElementById('saveDat');
+      const toggle = document.getElementById('themeToggle');
+      const themeLabel = document.getElementById('themeLabel');
+
+      // show UI after a tiny delay so fonts / layout settled
+      window.addEventListener('load', ()=>{
+        // apply stored theme
+        const stored = localStorage.getItem('sps-theme') || 'light';
+        applyTheme(stored);
+        container.style.visibility = 'visible';
+      });
+
+      // pins selection
+      frameList.addEventListener('click', (ev)=>{
+        const t = ev.target;
+        if(t && t.tagName === 'DIV'){
+          [...frameList.children].forEach(d=>d.classList.remove('selected'));
+          t.classList.add('selected');
+        }
+      });
+      // also allow keyboard selection
+      frameList.addEventListener('keydown', (e)=>{
+        if(e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          e.target.click();
+        }
+      });
+
+      // stroke +/- handlers
+      function setStroke(v){
+        const n = Math.max(10, Math.min(20000, Math.round(v)));
+        strokeValue.textContent = n.toString();
+      }
+      strokeMinus.addEventListener('click', ()=> setStroke(Number(strokeValue.textContent) - 100));
+      strokePlus.addEventListener('click', ()=> setStroke(Number(strokeValue.textContent) + 100));
+      strokeMinus.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' ') { e.preventDefault(); strokeMinus.click(); }});
+      strokePlus.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' ') { e.preventDefault(); strokePlus.click(); }});
+
+      // balance handlers
+      function setBalance(v){
+        const n = Math.max(0, Math.min(100, Math.round(v)));
+        balanceValue.textContent = n.toString();
+      }
+      balanceMinus.addEventListener('click', ()=> setBalance(Number(balanceValue.textContent)-5));
+      balancePlus.addEventListener('click', ()=> setBalance(Number(balanceValue.textContent)+5));
+      balanceMinus.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' ') { e.preventDefault(); balanceMinus.click(); }});
+      balancePlus.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' ') { e.preventDefault(); balancePlus.click(); }});
+
+      // action buttons: ripple + accessible click
+      function addRipple(e){
+        const target = e.currentTarget;
+        const r = document.createElement('span');
+        r.className = 'ripple';
+        const rect = target.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        r.style.width = r.style.height = size + 'px';
+        const x = (e.clientX || (rect.left + rect.width/2)) - rect.left - size/2;
+        const y = (e.clientY || (rect.top + rect.height/2)) - rect.top - size/2;
+        r.style.left = x + 'px';
+        r.style.top = y + 'px';
+        target.appendChild(r);
+        setTimeout(()=> r.remove(), 700);
+      }
+
+      [makeBtn, remixBtn, delBtn].forEach(btn=>{
+        btn.addEventListener('click', (e)=>{
+          addRipple(e);
+        });
+        btn.addEventListener('keydown', e=> { if(e.key==='Enter' || e.key===' ') { e.preventDefault(); btn.click(); }});
+      });
+
+      // hookup save buttons (these call your save routines if present)
+      saveImg.addEventListener('click', ()=> {
+        if (typeof saveImage === 'function') { saveImage(); }
+        else alert('saveImage() not found — implement in your script or replace with desired save code.');
+      });
+      saveDat.addEventListener('click', ()=> {
+        if (typeof saveData === 'function') { saveData(); }
+        else alert('saveData() not found — implement in your script or replace with desired save code.');
+      });
+
+      // theme toggle logic
+      function applyTheme(name){
+        const html = document.documentElement;
+        if(name === 'dark'){
+          html.classList.add('dark');
+          document.documentElement.style.setProperty('--dummy','');
+          document.documentElement.setAttribute('data-theme','dark');
+          toggle.classList.add('on');
+          toggle.setAttribute('aria-checked','true');
+          themeLabel.textContent = 'Dark';
+          document.documentElement.classList.add('dark');
+          localStorage.setItem('sps-theme','dark');
+        } else {
+          html.classList.remove('dark');
+          toggle.classList.remove('on');
+          toggle.setAttribute('aria-checked','false');
+          themeLabel.textContent = 'Light';
+          document.documentElement.classList.remove('dark');
+          localStorage.setItem('sps-theme','light');
+        }
+      }
+
+      toggle.addEventListener('click', ()=>{
+        const current = localStorage.getItem('sps-theme') || 'light';
+        applyTheme(current === 'light' ? 'dark' : 'light');
+      });
+      toggle.addEventListener('keydown', (e)=>{ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggle.click(); }});
+
+      // file input visible label feedback
+      const fileInput = document.getElementById('file');
+      const fileLabel = document.getElementById('fileLabel');
+      fileInput.addEventListener('change', ()=>{
+        const f = fileInput.files && fileInput.files[0];
+        if(f) fileLabel.textContent = '📷 ' + f.name;
+        else fileLabel.textContent = '📁 Upload IMAGE';
+      });
+
+      // keep the selected mode (string / image)
+      const cstr = document.getElementById('cstr');
+      const cimg = document.getElementById('cimg');
+      cstr.addEventListener('click', ()=> { cstr.classList.add('selected'); cimg.classList.remove('selected'); });
+      cimg.addEventListener('click', ()=> { cimg.classList.add('selected'); cstr.classList.remove('selected'); });
+
+      // expose some simple getters so your other scripts can read settings:
+      window.SPS = {
+        getPins: ()=> {
+          const sel = frameList.querySelector('.selected') || frameList.children[0];
+          return Number(sel.textContent.trim());
+        },
+        getStrokes: ()=> Number(strokeValue.textContent),
+        getBalance: ()=> Number(balanceValue.textContent),
+        getMode: ()=> cstr.classList.contains('selected') ? 'string' : 'image'
+      };
+
+      // optionally, wire GENERATE to a global function if present (your generator)
+      makeBtn.addEventListener('click', ()=>{
+        if (typeof generateStringArt === 'function'){
+          generateStringArt(window.SPS.getPins(), window.SPS.getStrokes(), window.SPS.getBalance());
+        } else {
+          // dispatch a custom event so your scripts can listen if they want
+          window.dispatchEvent(new CustomEvent('sps-generate',{
+            detail: { pins: window.SPS.getPins(), strokes: window.SPS.getStrokes(), balance: window.SPS.getBalance() }
+          }));
+        }
+      });
+
+    })();
+  </script>
+
+  <!-- Animated string vector background code -->
+  <script>
+    (function(){
+      const svg = document.getElementById('stringSvg');
+      const group = document.getElementById('strings');
+
+      // parameters
+      const LINES = 28;           // number of string lines
+      const POINTS = 32;          // number of anchor points on top/bottom
+      const width = () => svg.clientWidth || svg.getBoundingClientRect().width;
+      const height = () => svg.clientHeight || svg.getBoundingClientRect().height;
+
+      // create anchor points on edges
+      function makePoints(){
+        const w = width(), h = height();
+        const topPoints = [];
+        const bottomPoints = [];
+        for(let i=0;i<POINTS;i++){
+          const x = (i/ (POINTS-1)) * w;
+          topPoints.push([x, -12 + Math.sin(i*0.5)*6]);
+          bottomPoints.push([x, h + 12 + Math.cos(i*0.3)*6]);
+        }
+        return { topPoints, bottomPoints };
+      }
+
+      // create lines
+      let paths = [];
+      function build(){
+        group.innerHTML = '';
+        paths = [];
+        const pts = makePoints();
+        for(let i=0;i<LINES;i++){
+          const t = i / (LINES-1);
+          const a = Math.floor(t*(POINTS-2));
+          const b = Math.min(POINTS-1, a + 5 + Math.floor((1-t)*6));
+          const p1 = pts.topPoints[a];
+          const p2 = pts.bottomPoints[b];
+          const midx = (p1[0] + p2[0]) / 2 + Math.sin(i*0.8 + Date.now()*0.0002)*80*(0.6 - t)* (Math.random()*0.8+0.2);
+          const midy = (p1[1] + p2[1]) / 2 + Math.cos(i*1.1 + Date.now()*0.0003)*18*(0.6 - t);
+          const d = `M ${p1[0]} ${p1[1]} Q ${midx} ${midy} ${p2[0]} ${p2[1]}`;
+          const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+          path.setAttribute('d', d);
+          path.setAttribute('fill','none');
+          path.setAttribute('stroke','url(#g1)');
+          path.setAttribute('stroke-width', 1 + (1.8*(1-t)).toFixed(2));
+          path.setAttribute('stroke-linecap','round');
+          path.setAttribute('stroke-linejoin','miter');
+          path.setAttribute('opacity', (0.12 + (0.5*(1-t))).toFixed(3));
+          group.appendChild(path);
+          paths.push({ path, a, b, t });
+        }
+      }
+
+      // animate: modify control points slightly over time
+      function animate(){
+        if(!group) return;
+        const pts = makePoints();
+        paths.forEach((p,i)=>{
+          const t = p.t;
+          const p1 = pts.topPoints[p.a];
+          const p2 = pts.bottomPoints[p.b];
+          const jitter = Math.sin(i*0.9 + Date.now()*0.0007) * 60 * (0.6 - t);
+          const midx = (p1[0] + p2[0]) / 2 + jitter;
+          const midy = (p1[1] + p2[1]) / 2 + Math.cos(i*1.3 + Date.now()*0.0009)*20*(0.6 - t);
+          const d = `M ${p1[0]} ${p1[1]} Q ${midx} ${midy} ${p2[0]} ${p2[1]}`;
+          p.path.setAttribute('d', d);
+        });
+        requestAnimationFrame(animate);
+      }
+
+      // interactive react to mouse move
+      let mouse = { x: -9999, y: -9999 };
+      svg.addEventListener('mousemove', (e)=>{
+        const r = svg.getBoundingClientRect();
+        mouse.x = (e.clientX - r.left) / r.width;
+        mouse.y = (e.clientY - r.top) / r.height;
+        // slightly rebuild with a mouse-dependent factor to react
+        // not rebuilding whole paths for performance; small subtle influence handled in animate
+      });
+      svg.addEventListener('mouseleave', ()=> { mouse.x = -9999; mouse.y = -9999; });
+
+      // responsive rebuild
+      let resizeTimer;
+      function rebuild(){
+        build();
+      }
+      window.addEventListener('resize', ()=>{
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(rebuild, 140);
+      });
+
+      // initial build + animate
+      rebuild();
+      requestAnimationFrame(animate);
+
+      // small subtle pulsing to gradient stops so it feels alive
+      let pulse = 0;
+      setInterval(()=>{
+        pulse += 0.06;
+        const s1 = Math.abs(Math.sin(pulse))*0.12 + 0.04;
+        const s2 = Math.abs(Math.cos(pulse))*0.08 + 0.02;
+        const stops = svg.querySelectorAll('stop');
+        if(stops[0]) stops[0].setAttribute('stop-opacity', (s1).toFixed(3));
+        if(stops[1]) stops[1].setAttribute('stop-opacity', (s2).toFixed(3));
+      },140);
+
+    })();
+  </script>
 </body>
 </html>
