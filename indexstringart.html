@@ -3,7 +3,7 @@
 <head>
   <title>STRING PHOTO SIMULATOR</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+
   <!-- Scripts -->
   <script src="p5.min.js"></script>
   <script src="send.js" defer></script>
@@ -21,21 +21,28 @@
       font-family: 'Rubik', sans-serif;
       margin: 0;
       height: 100vh;
+      display: flex;
+      justify-content: center;
+      overflow-x: hidden;
     }
 
-    /* ★ Increased width for desktop */
+    /* Main container */
     #bodyContainer {
       width: 920px;
-      margin: 30px auto;
+      margin-top: 20px;
       background: #20232A;
       border-radius: 32px;
       box-shadow: 0 8px 32px rgba(40, 44, 52, 0.6);
       padding: 30px 40px;
       animation: fadeIn 1.2s;
+      display: flex;
+      flex-direction: column;
+      gap: 30px; /* spacing between settings & viewer */
     }
 
-    @keyframes fadeIn { from { opacity: 0;} to {opacity: 1;} }
+    @keyframes fadeIn { from { opacity:0;} to {opacity:1;} }
 
+    /* SETTINGS PANEL */
     #toolBar {
       display: flex;
       flex-direction: column;
@@ -53,7 +60,7 @@
       margin-bottom: 6px;
     }
 
-    /* Buttons */
+    /* Fancy Buttons */
     .animated-btn {
       background: linear-gradient(90deg, #ffd600 0%, #ff4081 100%);
       color: #181A20;
@@ -70,7 +77,7 @@
       box-shadow: 0 8px 32px #ffd60080;
     }
 
-    /* Box Styling */
+    /* Display boxes */
     .displayBox {
       background: #242632;
       border-radius: 12px;
@@ -100,13 +107,12 @@
       cursor: pointer;
     }
 
-    /* ★ FINAL BIG DESKTOP IMAGE VIEWER */
+    /* IMAGE VIEWER (big but always below settings) */
     #sketch-holder {
       width: 100%;
-      height: 650px;       /* ★ Big Viewer */
-      max-height: 75vh;    /* ★ Auto fit desktop */
+      height: 650px;
+      max-height: 75vh;
       background: #111218;
-      margin-top: 30px;
       border-radius: 22px;
       overflow: hidden;
       box-shadow: 0 8px 40px #0007;
@@ -122,9 +128,9 @@
     <div id="toolBar">
 
       <div id="step01">
-        <div id="inputImage" style="cursor: pointer;">
+        <div id="inputImage" style="cursor:pointer;">
           <label class="labelSt" for="file">IMAGE</label>
-          <input type="file" id="file" onchange="openFile(event)" style="margin-top:6px;" />
+          <input type="file" id="file" onchange="openFile(event)" style="margin-top:6px;">
         </div>
 
         <div id="numbers">
@@ -167,7 +173,7 @@
         </div>
 
         <div id="colorBalance" class="buttonSt">
-          <div class="labelSt" style="font-size: 10px;">Color Balance</div>
+          <div class="labelSt" style="font-size:10px;">Color Balance</div>
           <div id="balance" class="displayBoxParent">
             <div id="balanceScreen" class="displayBox">
               <div id="balanceMinus" class="plusMinus">➖</div>
@@ -177,8 +183,8 @@
           </div>
         </div>
 
-        <div id="saveThings" style="text-align: center;">
-          <div class="labelSt" style="font-size: 10px;">Save</div>
+        <div id="saveThings" style="text-align:center;">
+          <div class="labelSt" style="font-size:10px;">Save</div>
           <div id="saveBox" class="displayBoxParent">
             <div id="saveList" class="displayBox">
               <div>IMG</div>
@@ -199,7 +205,7 @@
 
     </div>
 
-    <!-- ★ BIG DESKTOP IMAGE VIEWER -->
+    <!-- CLEAN SEPARATION — IMAGE VIEWER BELOW -->
     <div id="sketch-holder"></div>
 
   </div>
