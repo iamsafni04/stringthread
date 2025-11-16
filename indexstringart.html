@@ -3,13 +3,17 @@
 <head>
   <title>STRING PHOTO SIMULATOR</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- Scripts -->
   <script src="p5.min.js"></script>
   <script src="send.js" defer></script>
   <script src="kniter.js"></script>
   <script src="editPicturePage.js"></script>
   <script src="generatePage.js"></script>
   <script src="sketch.js"></script>
+
   <link href="https://fonts.googleapis.com/css?family=Rubik:400,500,700&display=swap" rel="stylesheet">
+
   <style>
     body {
       background: #181A20;
@@ -18,26 +22,28 @@
       margin: 0;
       height: 100vh;
     }
+
+    /* ★ Increased width for desktop */
     #bodyContainer {
-      max-width: 480px;
-      margin: 40px auto;
+      width: 920px;
+      margin: 30px auto;
       background: #20232A;
       border-radius: 32px;
       box-shadow: 0 8px 32px rgba(40, 44, 52, 0.6);
-      padding: 28px 22px;
-      visibility: visible;
+      padding: 30px 40px;
       animation: fadeIn 1.2s;
     }
+
     @keyframes fadeIn { from { opacity: 0;} to {opacity: 1;} }
 
     #toolBar {
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 20px;
     }
 
     .buttonSt, .labelSt, .plusMinus, .displayBox, .displayBoxParent {
-      margin: 12px 0;
+      margin: 10px 0;
     }
 
     .labelSt {
@@ -45,37 +51,32 @@
       font-weight: 500;
       color: #F9A825;
       margin-bottom: 6px;
-      letter-spacing: 1px;
-      text-shadow: 0 1px 6px #282a36a9;
     }
 
-    /* Animated Button Styles */
+    /* Buttons */
     .animated-btn {
       background: linear-gradient(90deg, #ffd600 0%, #ff4081 100%);
       color: #181A20;
       font-weight: 700;
       border: none;
-      border-radius: 18px;
-      padding: 13px 22px;
+      border-radius: 16px;
+      padding: 13px 24px;
       cursor: pointer;
-      box-shadow: 0 4px 18px #ff408176;
-      transition: transform 0.18s, box-shadow 0.22s;
-      font-size: 17px;
-      margin: 12px 0;
+      font-size: 16px;
+      transition: .2s;
     }
-    .animated-btn:hover, .animated-btn:focus {
-      transform: scale(1.08) rotate(-2deg);
-      box-shadow: 0 8px 32px #ffd60088;
-      outline: none;
+    .animated-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 32px #ffd60080;
     }
 
-    /* Dark widget boxes */
+    /* Box Styling */
     .displayBox {
       background: #242632;
       border-radius: 12px;
       padding: 10px;
       display: flex;
-      gap: 14px;
+      gap: 12px;
       align-items: center;
       box-shadow: 0 2px 8px #0009;
     }
@@ -86,70 +87,48 @@
       cursor: pointer;
       background: #232843;
       color: #FFD600;
-      transition: background 0.16s;
     }
     .displayBox .selected {
       background: linear-gradient(90deg, #ffa000 0%, #ff4081 80%);
       color: #181A20;
-      box-shadow: 0 2px 12px #ffd60066;
     }
+
     .plusMinus {
       font-size: 25px;
       padding: 4px 12px;
       color: #FFD600;
       cursor: pointer;
-      transition: background 0.16s;
-    }
-    .plusMinus:hover {
-      background: #292d3a;
-      border-radius: 50%;
     }
 
-    /* Color balance slider */
-    #colorBalance {
-      margin: 16px 0 0 0;
-    }
-
-    /* Save/Action Buttons */
-    #saveThings .displayBox > div, #saveThings .displayBoxParent {
-      background: #21212b;
-      color: #ffd600;
-      border-radius: 10px;
-      cursor: pointer;
-      margin-right: 8px;
-      font-size: 15px;
-      box-shadow: 0 2px 4px #ffd60040;
-      padding: 8px 11px;
-      transition: background 0.13s, color 0.13s;
-    }
-    #saveThings .displayBox > div:hover {
-      background: #ff4081;
-      color: #fffde7;
-    }
-
-    /* Sectioning styles */
+    /* ★ FINAL BIG DESKTOP IMAGE VIEWER */
     #sketch-holder {
-      border-radius: 16px;
-      background: #191a23;
-      min-height: 180px;
-      box-shadow: 0 4px 24px #21212144;
-      margin: 18px 0 0 0;
+      width: 100%;
+      height: 650px;       /* ★ Big Viewer */
+      max-height: 75vh;    /* ★ Auto fit desktop */
+      background: #111218;
+      margin-top: 30px;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 8px 40px #0007;
     }
+
   </style>
-  <meta name="keyword" content="stringart, stringphoto, craft">
 </head>
+
 <body>
-  <body>
   <div id="bodyContainer">
 
-    <!-- SETTINGS AREA -->
-    <div id="toolBar" style="position: relative; z-index: 2;">
+    <!-- SETTINGS PANEL -->
+    <div id="toolBar">
+
       <div id="step01">
         <div id="inputImage" style="cursor: pointer;">
           <label class="labelSt" for="file">IMAGE</label>
           <input type="file" id="file" onchange="openFile(event)" style="margin-top:6px;" />
         </div>
+
         <div id="numbers">
+
           <div id="numberOfPins" class="buttonSt">
             <div class="labelSt">Pins Number</div>
             <div id="pinSelect" class="displayBoxParent">
@@ -161,6 +140,7 @@
               </div>
             </div>
           </div>
+
           <div id="numberOfstroke" class="buttonSt">
             <label class="labelSt">Strokes Number</label>
             <div id="stroke" class="displayBoxParent">
@@ -171,13 +151,16 @@
               </div>
             </div>
           </div>
+
         </div>
+
         <div id="makeArt">
           <button id="strokeReady" class="animated-btn">Gen</button>
         </div>
       </div>
 
       <div id="step02">
+
         <div id="imgorstring">
           <div id="cstr" class="selected"></div>
           <div id="cimg"></div>
@@ -211,28 +194,14 @@
         <div id="backToStarted">
           <button id="backtostarted" class="animated-btn" style="background:linear-gradient(90deg,#181A20 0%,#ff4081 80%);color:#ffd600;width:95px;">Del</button>
         </div>
+
       </div>
+
     </div>
 
-    <!-- IMAGE VIEWER AREA -->
-<!-- BIG IMAGE VIEWER AREA -->
-<div id="sketch-holder"
-  style="
-    margin-top:30px;
-    position: relative;
-    z-index:1;
-    width:100%;
-    height:600px;
-    max-height:80vh;
-    background:#101116;
-    border-radius:18px;
-    overflow:hidden;
-    box-shadow:0 6px 32px #0006;
-  ">
-</div>
-
+    <!-- ★ BIG DESKTOP IMAGE VIEWER -->
+    <div id="sketch-holder"></div>
 
   </div>
 </body>
-
 </html>
